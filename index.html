@@ -1,1 +1,204 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A Little Investigation ♡</title>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;min-height:100vh;padding:20px;
+  display:flex;align-items:center;justify-content:center;
+  background:#fff2f1;color:#594047;
+  font-family:Georgia,serif
+}
+.card{
+  width:100%;max-width:430px;padding:28px 22px;
+  background:#fffdfb;border-radius:25px;
+  text-align:center;box-shadow:0 10px 35px #a66b6b22;
+  animation:appear .4s ease
+}
+@keyframes appear{
+  from{opacity:0;transform:translateY(12px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.emoji{font-size:48px}
+h1{color:#ad6377;font-size:29px}
+h2{font-size:22px;line-height:1.5}
+p{line-height:1.8}
+.small{font-size:12px;letter-spacing:2px;color:#a58b91}
+button{
+  display:block;width:100%;padding:15px;margin:9px 0;
+  border:1px solid #f0d5da;border-radius:14px;
+  background:#fff0f2;color:#654650;
+  font-size:15px;font-family:inherit
+}
+button.selected{background:#f4d5de;border:2px solid #b86d80}
+.primary{background:#b86d80;color:white;border:0;margin-top:18px}
+.primary:disabled{opacity:.4}
+.progress{height:6px;background:#f3e3e6;border-radius:10px;margin:20px 0 28px}
+#bar{height:100%;width:0;background:#b86d80;border-radius:10px;transition:.4s}
+.hidden{display:none!important}
+.letter{background:#fff1f2;border-radius:18px;padding:18px;text-align:left;margin-top:20px}
+.letter p{line-height:1.9}
+.footer{font-size:12px;color:#b49ca1;margin-top:22px}
+.heart{position:fixed;bottom:-30px;animation:float 4s linear forwards;pointer-events:none}
+@keyframes float{to{transform:translateY(-110vh) rotate(35deg);opacity:0}}
+</style>
+</head>
+<body>
+
+<div class="card">
+
+<section id="intro">
+  <div class="emoji">🕵🏻‍♀️</div>
+  <p class="small">A CONFIDENTIAL MATTER</p>
+  <h1>A Little Investigation</h1>
+  <p>Hello! You've been selected for a highly important investigation.</p>
+  <p>There are a few questions that require your honest answers.</p>
+  <p><b>Don't worry. No mathematics involved.</b></p>
+  <button class="primary" onclick="startQuiz()">Alright, let's do this ♡</button>
+  <div class="footer">Absolutely serious business. Probably.</div>
+</section>
+
+<section id="quiz" class="hidden">
+  <p class="small" id="counter"></p>
+  <div class="progress"><div id="bar"></div></div>
+  <div class="emoji">💭</div>
+  <h2 id="question"></h2>
+  <div id="options"></div>
+  <button class="primary" id="next" onclick="nextQuestion()" disabled>Lock in my answer →</button>
+  <div class="footer">Choose wisely. The investigator is watching.</div>
+</section>
+
+<section id="ending" class="hidden">
+  <div class="emoji">📂</div>
+  <p class="small">CASE REVIEW</p>
+  <h1>Investigation Complete!</h1>
+  <p>All answers have been recorded. The evidence has been carefully examined.</p>
+  <p>There is just one final finding to reveal...</p>
+  <button class="primary" onclick="reveal()">Open the final report 💌</button>
+</section>
+
+<section id="final" class="hidden">
+  <div class="emoji">💌</div>
+  <p class="small">THE FINAL FINDING</p>
+  <h1>Well, here's the plot twist.</h1>
+  <div class="letter">
+    <p>Hey, you. ❤️</p>
+    <p>I could pretend there was some very important scientific reason behind all these questions...</p>
+    <p>But honestly, I just wanted an excuse to make you smile.</p>
+    <p>Somewhere between our random conversations, little updates, laughs and occasional overthinking sessions, I realised that talking to you has become something I genuinely look forward to.</p>
+    <p>I like getting to know you, discovering the little things that make you who you are, and hearing about the way you see the world.</p>
+    <p>And yes, in case this investigation wasn't obvious enough... <b>I kinda like you. Quite a bit, actually. :)</b></p>
+    <p>No pressure, no expectations, and definitely no demand for an immediate answer. I just thought you deserved to know.</p>
+    <p>Thank you for participating in this extremely unnecessary investigation.</p>
+    <p><b>— Your favourite investigator (hopefully) ♡</b></p>
+  </div>
+  <p style="color:#b86d80">Case closed. You may now smile. :)</p>
+</section>
+
+</div>
+
+<script>
+const questions=[
+{
+q:"Let's begin with something important. What's your biggest green flag in a person?",
+a:["Someone who remembers the little things.","Someone who can make me laugh.","Someone emotionally mature.","Someone who brings me food. Priorities."]
+},
+{
+q:"Your ideal conversation would be...",
+a:["Deep talks that accidentally last hours.","Laughing at the most ridiculous things.","Discussing books and life.","A mixture of everything, honestly."]
+},
+{
+q:"Someone remembers a tiny detail you mentioned weeks ago. Your reaction?",
+a:["That's actually really sweet.","Wait... you REMEMBERED?","Suspiciously impressive.","I'll pretend I'm not impressed."]
+},
+{
+q:"Be honest. What is your most dangerous quality?",
+a:["Overthinking absolutely everything.","Being stubborn when I know I'm right.","Getting attached to fictional characters.","Being adorable without trying."]
+},
+{
+q:"What makes an ordinary day unexpectedly better?",
+a:["A thoughtful message.","A genuinely good conversation.","A little unexpected surprise.","Someone simply making time for me."]
+},
+{
+q:"Final question. Why do you think someone made this questionnaire for you?",
+a:["They clearly have too much free time.","They are conducting important research.","They wanted to make me smile.","I think I know, but let's see..."]
+}
+];
+
+let current=0;
+let selected=-1;
+
+function show(id){
+  ["intro","quiz","ending","final"].forEach(s=>
+    document.getElementById(s).classList.add("hidden")
+  );
+  document.getElementById(id).classList.remove("hidden");
+}
+
+function startQuiz(){
+  current=0;
+  show("quiz");
+  loadQuestion();
+}
+
+function loadQuestion(){
+  selected=-1;
+  const q=questions[current];
+  document.getElementById("counter").innerText=
+    "QUESTION "+(current+1)+" OF "+questions.length;
+  document.getElementById("question").innerText=q.q;
+  document.getElementById("bar").style.width=
+    (current/questions.length*100)+"%";
+
+  const area=document.getElementById("options");
+  area.innerHTML="";
+
+  q.a.forEach((answer,index)=>{
+    const btn=document.createElement("button");
+    btn.innerText=answer;
+    btn.onclick=()=>{
+      selected=index;
+      [...area.children].forEach(b=>b.classList.remove("selected"));
+      btn.classList.add("selected");
+      document.getElementById("next").disabled=false;
+    };
+    area.appendChild(btn);
+  });
+
+  const next=document.getElementById("next");
+  next.disabled=true;
+  next.innerText=current===questions.length-1?
+    "Submit my answers →":"Next question →";
+}
+
+function nextQuestion(){
+  if(selected===-1)return;
+  if(current<questions.length-1){
+    current++;
+    loadQuestion();
+  }else{
+    document.getElementById("bar").style.width="100%";
+    show("ending");
+  }
+}
+
+function reveal(){
+  show("final");
+  for(let i=0;i<18;i++){
+    const h=document.createElement("div");
+    h.className="heart";
+    h.innerText=["♡","♥","💕"][i%3];
+    h.style.left=Math.random()*100+"vw";
+    h.style.animationDelay=Math.random()+"s";
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(),5000);
+  }
+}
+</script>
+</body>
+</html>
+
